@@ -126,7 +126,7 @@ class CSVDataManager(object):
 
         self.load_func = load_formats[config['format']]
     
-        csvPath = 'metadata/UrbanSound8K.csv' if not config['csvPath'] else config['csvPath']
+        csvPath = 'metadata/UrbanSound8K.csv' if not 'csvPath' in config else config['csvPath']
         print(f'Loading csv configuration from {csvPath}..')
         
         mfile = os.path.join(self.dir_path, csvPath)

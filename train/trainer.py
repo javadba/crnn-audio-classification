@@ -57,12 +57,10 @@ class Trainer(BaseTrainer):
         self.writer.set_step(epoch) 
 
         _trange = tqdm(self.data_loader, leave=True, desc='')
-        print(f'tqdm _trange={_trange}')
 
         for batch_idx, batch in enumerate(_trange):
             batch = [b.to(self.device) for b in batch]
             data, target = batch[:-1], batch[-1]
-            print(f'len(data) = {len(data)}')
             assert(len(data)>0)
             if self.verbosity>=3:
               print(f'data[0]={str(data[0])[0:100]}')

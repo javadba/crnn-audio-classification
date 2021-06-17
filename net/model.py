@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .base_model import BaseModel
+from utils.logger import  p,error
 
 # F.max_pool2d needs kernel_size and stride. If only one argument is passed, 
 # then kernel_size = stride
@@ -52,7 +53,13 @@ class AudioCRNN(BaseModel):
         xt, lengths = self.spec(xt, lengths)                
 
         # (batch, channel, freq, time)
-        xt = self.net['convs'](xt)
+        try:
+          xt = self.net['convs'](xt)
+          p(f'Successfully completed forward for xt.len={len(xt)} shape={xt.shape}')
+        except Exception as e:
+          error(f'Error in forward for xt.len={len(xt)} shape={xt.shape}',e)
+          return x
+            
         lengths = self.modify_lengths(lengths)
 
         # xt -> (batch, time, freq, channel)

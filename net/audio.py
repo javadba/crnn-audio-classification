@@ -12,7 +12,7 @@ def _num_stft_bins(lengths, fft_length, hop_length, pad):
 class MelspectrogramStretch(MelSpectrogram):
 
     def __init__(self, hop_length=None, 
-                       sample_rate=44100, 
+                       sample_rate=48000,
                        num_mels=128, 
                        fft_length=2048, 
                        norm='whiten', 

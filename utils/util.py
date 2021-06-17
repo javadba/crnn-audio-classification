@@ -54,6 +54,8 @@ def load_image(path):
     return Image.open(path)
 
 def load_audio(path):
+    from . import logger
+    logger.p(f'Loading audiofile {path}..')
     return sf.read(path)
 
 
