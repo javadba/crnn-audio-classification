@@ -13,11 +13,16 @@ from eval import ClassificationEvaluator, AudioInference
 
 def p(msg): print(msg)
 
+def isMacOS():
+  import platform
+  return platform.system() == 'Darwin'
+
 def isCuda():
+  import os
   import torch
   device = torch.device("cuda")
   print(f'typeof(device)={type(device)} device={device}')
-  return str(device)=='cuda'
+  return str(device)=='cuda' and not isMacOS()
 
 print(f"IsCuda? {isCuda()}")
 
@@ -96,7 +101,6 @@ def train_main(config, resume):
     num_classes = len(classes)
     print(f'num_classes = {num_classes}')
 
-
     loss = getattr(net_module, config['train']['loss'])
     metrics = getattr(net_module, config['metrics'])(num_classes)
 
@@ -166,9 +170,12 @@ if __name__ == '__main__':
     argparser.add_argument('--cfg', default=None, type=str,
                            help='nn layer config file')
 
+    argparser.add_argument('-v', '--verbose', default=False, type=bool,
+                           help='verbose debugging')
+
     args = argparser.parse_args()
 
-
+    verbose = args.verbose
     # Resolve config vs. resume
     checkpoint = None
     if args.config:
