@@ -55,13 +55,13 @@ class AudioCRNN(BaseModel):
         # (batch, channel, freq, time)
         try:
           xt = self.net['convs'](xt)
-          p(f'Successfully completed forward for xt.len={len(xt)} shape={xt.shape}')
+          # p(f'Successfully completed forward for xt.len={len(xt)} shape={xt.shape}')
         except Exception as e:
           error(f'Error in forward for xt.len={len(xt)} shape={xt.shape}',e)
           return x
             
         lengths = self.modify_lengths(lengths)
-
+  
         # xt -> (batch, time, freq, channel)
         x = xt.transpose(1, -1)
 

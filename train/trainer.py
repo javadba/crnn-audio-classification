@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from torchvision.utils import make_grid
 from .base_trainer import BaseTrainer
+from  utils import logger
 
 from tqdm import tqdm
 
@@ -23,6 +24,7 @@ class Trainer(BaseTrainer):
         self.do_validation = self.valid_data_loader is not None
         self.lr_scheduler = lr_scheduler
         self.log_step = int(np.sqrt(data_loader.batch_size))
+        logger.p(f"Trainer: datasize={len(self.data_loader.dataset.data_arr)}")
 
     def _eval_metrics(self, output, target):
         acc_metrics = np.zeros(len(self.metrics))
@@ -54,7 +56,7 @@ class Trainer(BaseTrainer):
         total_loss = 0
         total_metrics = np.zeros(len(self.metrics))
 
-        self.writer.set_step(epoch) 
+        self.writer.set_step(epoch)
 
         _trange = tqdm(self.data_loader, leave=True, desc='')
 

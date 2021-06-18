@@ -55,8 +55,12 @@ def load_image(path):
 
 def load_audio(path):
     from . import logger
-    logger.p(f'Loading audiofile {path}..')
-    return sf.read(path)
+    # logger.p(f'Loading audiofile {path}..')
+    x,fs = sf.read(path)
+    if len(x) <= 0:
+      raise Exception(f'No data found at {path}')
+    else:
+      return x,fs
 
 
 def plot_heatmap(arr, fname, pred=''):

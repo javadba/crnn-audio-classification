@@ -104,10 +104,12 @@ def train_main(config, resume):
     loss = getattr(net_module, config['train']['loss'])
     metrics = getattr(net_module, config['metrics'])(num_classes)
 
-    trainable_params = filter(lambda p: p.requires_grad, model.parameters())
+    trainable_params = list(filter(lambda p: p.requires_grad, model.parameters()))
 
     opt_name = config['optimizer']['type']
     opt_args = config['optimizer']['args']
+    print(f'opt_args={opt_args} opt_name={opt_name}')
+    print(f'trainable_params={str(trainable_params)[0:120]}')
     optimizer = getattr(torch.optim, opt_name)(trainable_params, **opt_args)
 
 

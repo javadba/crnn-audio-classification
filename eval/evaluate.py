@@ -39,8 +39,6 @@ class ClassificationEvaluator(object):
             return ret
 
 
-
-
     def _store_batch(self, data, batch_size, output, target):
 
         path = 'eval_batch'
