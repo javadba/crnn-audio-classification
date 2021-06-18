@@ -1,16 +1,41 @@
 import torch
+import numpy as np
 
-def accuracy(output, target, percent=0.1):
+def accuracyOrig(output, target, percent=0.1):
     with torch.no_grad():
 
         assert output.shape[0] == len(target)
         preds = torch.argmax(output,dim=1)
-        tp = 0
         tp = torch.sum(preds == target).item()
 
     return tp / len(target)
 
+def accuracyNew(output, target, percent=0.1):
+    with torch.no_grad():
 
+        assert output.shape[0] == len(target)
+        preds = torch.argmax(output,dim=1)
+        nt = target.numpy()
+        np = preds.numpy()
+        from collections import defaultdict
+        acc = defaultdict(defaultdict)
+        for [t,p] in list(zip(nt,np)):
+          x = (t == p) + 0
+          newx = (0 if not x in acc[t] else acc[t][x]) + 1
+          acc[t][p] = newx
+
+        # accurs = { t:xv/sum(v.values()) for t,v in acc.items() for xk,xv in v if xv }
+        accurs = {}
+        print(f'acc={acc}')
+        for k,v in acc.items():
+          for xk, xv in ([xk, xv] for xk, xv in v.items()):
+            accurs[k] = xv/sum(v.values())
+        
+        mean_accur = sum(accurs) / len(accurs)
+        print(f'MeanAccuracy={mean_accur} Accuracies = {accurs}')
+        return mean_accur
+
+accuracy = accuracyOrig
 
 def avg_precision(output, target, num_classes, mode='macro'):
     
