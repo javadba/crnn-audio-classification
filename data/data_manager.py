@@ -131,13 +131,13 @@ class CSVDataManager(object):
         
         mfile = os.path.join(self.dir_path, csvPath)
         metadata_df = pd.read_csv(mfile).sample(frac=1)
-        self.metadata_df = self._remove_too_small(metadata_df, 1)
+        self.metadata_df = self._remove_too_small(metadata_df, 0)
 
         self.classes = self._get_classes(self.metadata_df[['class', 'classID']])
         self.data_splits = self._10kfold_split(self.metadata_df)
         
 
-    def _remove_too_small(self, df, min_sec=0.5):
+    def _remove_too_small(self, df, min_sec=0.0):
         # Could also make length 1 if it is below 1 and then implicitly we
         # are padding the results
         dur_cond = (df['end'] - df['start'])>=min_sec
