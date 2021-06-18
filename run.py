@@ -3,6 +3,7 @@ import argparse, json, os
 import torch
 
 from utils import Logger
+
 #from data import FolderDataManager, ImageTransforms
 import data as data_module
 import net as net_module
@@ -131,6 +132,11 @@ def train_main(config, resume):
 
     p('calling train()')
     trainer.train()
+    f = '/data/mike-coughs/audio/fold9/neg-0718-004-cough-f-52.3.wav'
+    from utils.util import load_audio
+    data,fs = load_audio(f)
+    pred = model.predict(data)
+    print(pred)
     return trainer
     #duration = 1; freq = 440
       #os.system('play --no-show-progress --null --channels 1 synth %s sine %f'%(duration, freq))
