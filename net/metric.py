@@ -1,14 +1,20 @@
 import torch
 import numpy as np
 
-def accuracyOrig(output, target, percent=0.1):
+def accuracyBal(output, target, percent=0.1):
     with torch.no_grad():
 
         assert output.shape[0] == len(target)
         preds = torch.argmax(output,dim=1)
-        tp = torch.sum(preds == target).item()
-
-    return tp / len(target)
+        npTarg = np.array(target)
+        npPreds = np.array(preds)
+        targs1 = np.where(npTarg==1)
+        targs0 = np.where(npTarg==0)
+        tp1 = np.sum(npPreds[targs1] == npTarg[targs1])/len(targs1[0])
+        tp0 = np.sum(npPreds[targs0] == npTarg[targs0])/len(targs0[0])
+        tpAvg = (tp1+tp0)/2.
+        print(f'Accur0={tp0} Accur1={tp1} tpAvg={tpAvg}')
+    return tpAvg
 
 def accuracyNew(output, target, percent=0.1):
     with torch.no_grad():
@@ -35,7 +41,7 @@ def accuracyNew(output, target, percent=0.1):
         print(f'MeanAccuracy={mean_accur} Accuracies = {accurs}')
         return mean_accur
 
-accuracy = accuracyOrig
+accuracy = accuracyBal
 
 def avg_precision(output, target, num_classes, mode='macro'):
     
