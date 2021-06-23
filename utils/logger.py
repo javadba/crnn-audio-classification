@@ -2,6 +2,7 @@ import json
 import logging
 from datetime import datetime
 
+Debug =True
 logging.basicConfig(level=logging.INFO, format='')
 
 class Logger:
@@ -21,6 +22,9 @@ class Logger:
         return json.dumps(self.entries, sort_keys=True, indent=4)
 
 def p(msg): print(f'[{str(datetime.now())[6:-3]}] {msg}', flush=True)
+
+def debug(msg):
+  if Debug: p(msg)
 
 def error(msg,e):
   emsg = tracerr(msg,True)

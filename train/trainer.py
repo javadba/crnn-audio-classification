@@ -64,6 +64,8 @@ class Trainer(BaseTrainer):
             batch = [b.to(self.device) for b in batch]
             data, target = batch[:-1], batch[-1]
             assert(len(data)>0)
+            
+            
             if self.verbosity>=3:
               print(f'data[0]={str(data[0])[0:100]}')
               print(f'batch={str(batch)[0:100]}')

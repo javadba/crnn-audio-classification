@@ -102,6 +102,13 @@ def train_main(config, resume):
     num_classes = len(classes)
     print(f'num_classes = {num_classes}')
 
+
+    metrics = getattr(net_module, config['metrics'])(num_classes)
+
+    evaluation = ClassificationEvaluator(t_loader, model)
+    ret = evaluation.evaluate(metrics)
+
+
     loss = getattr(net_module, config['train']['loss'])
     metrics = getattr(net_module, config['metrics'])(num_classes)
 
@@ -136,7 +143,7 @@ def train_main(config, resume):
     from utils.util import load_audio
     data,fs = load_audio(f)
     pred = model.predict(data)
-    print(pred)
+    print(f'Prediction for {f}: {pred}')
     return trainer
     #duration = 1; freq = 440
       #os.system('play --no-show-progress --null --channels 1 synth %s sine %f'%(duration, freq))

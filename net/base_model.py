@@ -1,7 +1,7 @@
 import logging
 import torch.nn as nn
 import numpy as np
-
+from .loss import Config
 
 class BaseModel(nn.Module):
     """

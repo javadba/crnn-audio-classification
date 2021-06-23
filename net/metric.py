@@ -1,19 +1,34 @@
 import torch
 import numpy as np
 
+
+def accuracyOrig(output, target, percent=0.1):
+    with torch.no_grad():
+
+        assert output.shape[0] == len(target)
+        preds = torch.argmax(output,dim=1)
+        tp = 0
+        tp = torch.sum(preds == target).item()
+
+    return tp / len(target)
+
+accFile = open('/tmp/acc.txt','w')
 def accuracyBal(output, target, percent=0.1):
     with torch.no_grad():
 
         assert output.shape[0] == len(target)
         preds = torch.argmax(output,dim=1)
-        npTarg = np.array(target)
-        npPreds = np.array(preds)
-        targs1 = np.where(npTarg==1)
-        targs0 = np.where(npTarg==0)
-        tp1 = np.sum(npPreds[targs1] == npTarg[targs1])/len(targs1[0])
-        tp0 = np.sum(npPreds[targs0] == npTarg[targs0])/len(targs0[0])
+        npTarg = np.array(target.cpu())
+        npPreds = np.array(preds.cpu())
+        targs1 = np.where(npTarg==1) ; len1 = len(targs1)
+        targs0 = np.where(npTarg==0) ; len0 = len(targs1)
+        tp0 = 0 if not len0 else np.sum(npPreds[targs1] == npTarg[targs1])/len0
+        tp1 = 0 if not len1 else np.sum(npPreds[targs0] == npTarg[targs0])/len1
         tpAvg = (tp1+tp0)/2.
-        print(f'Accur0={tp0} Accur1={tp1} tpAvg={tpAvg}')
+        # if (tp1>0 and tp0 > 0):
+        msg = f'Accur0={tp0} Accur1={tp1} tpAvg={tpAvg}'
+        accFile.write(f'{msg}\n')
+        accFile.flush()
     return tpAvg
 
 def accuracyNew(output, target, percent=0.1):

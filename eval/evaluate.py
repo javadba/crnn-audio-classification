@@ -8,7 +8,7 @@ from utils import plot_heatmap, mkdir_p
 class ClassificationEvaluator(object):
 
     def __init__(self, data_loader, model):
-
+                                                      
         self.data_loader = data_loader
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = model.to(self.device)

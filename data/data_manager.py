@@ -9,6 +9,7 @@ from torch.utils.data.dataloader import default_collate
 
 from data.data_sets import FolderDataset
 from utils.util import list_dir, load_image, load_audio
+from utils.logger import p, debug, error
 
 
 class FolderDataManager(object):
@@ -36,7 +37,9 @@ class FolderDataManager(object):
         path_splits = os.path.join(self.dir_path, '.splits.json')
         if os.path.isfile(path_splits):
             self.data_splits = torch.load(path_splits)
-        else:         
+            splitMsg ='Split lengths: ' +  ','.join([ str(len(spl)) for spl in self.data_splits])
+            debug(f'class_counts={self.class_counts} {splitMsg}')
+        else:
             data_arr = self._get_arr(data_dic)        
             self.data_splits = self._get_splits(data_arr)
             torch.save(self.data_splits, path_splits) 
@@ -85,6 +88,7 @@ class FolderDataManager(object):
         ret = {}
         for k,v in data_dic.items():
             ret[k] = len(v)
+        debug(f'_class_counts={ret}')
         return ret
 
 
@@ -142,8 +146,9 @@ class CSVDataManager(object):
         # are padding the results
         dur_cond = (df['end'] - df['start'])>=min_sec
         not_train_cond = ~df['fold'].isin(self.splits['train'])
-
-        return df[(dur_cond)|(not_train_cond)]
+        removedDf = df[(dur_cond)|(not_train_cond)]
+        debug(f'Original dfSize={len(df)} filteredDfSize={len(removedDf)}')
+        return removedDf
 
     def _get_classes(self, df):
         c_col = df.columns[0]
@@ -162,6 +167,7 @@ class CSVDataManager(object):
                 fname = os.path.join(self.dir_path, fold_mod, '%s'%row[0])
                 # print(fname)
                 ret[s].append( {'path':fname, 'class':row[1], 'class_idx':row[2]} )
+        debug(f'10k_fold_split returns dflens={[str(len(rval)) for rval in ret.values()]}')
         return ret
 
     def get_loader(self, name, transfs):
@@ -180,6 +186,7 @@ class CSVDataManager(object):
 
         # seqs_pad -> (batch, time, channel) 
         seqs_pad = torch.nn.utils.rnn.pad_sequence(seqs, batch_first=True, padding_value=0)
+        # debug(f'OriginalSeqLen={str(len(seqs)
         #seqs_pad = seqs_pad_t.transpose(0,1)
         return seqs_pad, lengths, srs, labels
 
