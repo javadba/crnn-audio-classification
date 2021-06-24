@@ -20,8 +20,8 @@ def accuracyBal(output, target, percent=0.1):
         preds = torch.argmax(output,dim=1)
         npTarg = np.array(target.cpu())
         npPreds = np.array(preds.cpu())
-        targs1 = np.where(npTarg==1) ; len1 = len(targs1)
-        targs0 = np.where(npTarg==0) ; len0 = len(targs1)
+        targs1 = np.where(npTarg==1) ; len1 = len(targs1[0])
+        targs0 = np.where(npTarg==0) ; len0 = len(targs0[0])
         tp0 = 0 if not len0 else np.sum(npPreds[targs1] == npTarg[targs1])/len0
         tp1 = 0 if not len1 else np.sum(npPreds[targs0] == npTarg[targs0])/len1
         tpAvg = (tp1+tp0)/2.
