@@ -20,12 +20,18 @@ def accuracyBal(output, target, percent=0.1):
         preds = torch.argmax(output,dim=1)
         npTarg = np.array(target.cpu())
         npPreds = np.array(preds.cpu())
+        numPredZeros = np.count_nonzero(npPreds==0)
+        # if numPredZeros:
+        #   print(f'Got some 0 npPreds: {numPredZeros}')
         targs1 = np.where(npTarg==1) ; len1 = len(targs1[0])
         targs0 = np.where(npTarg==0) ; len0 = len(targs0[0])
-        tp0 = 0 if not len0 else np.sum(npPreds[targs1] == npTarg[targs1])/len0
-        tp1 = 0 if not len1 else np.sum(npPreds[targs0] == npTarg[targs0])/len1
+        # print(f'Len1={len1}  len0={len0}')
+        tp0 = 0 if not len0 else np.sum(npPreds[targs0] == npTarg[targs0])/len0
+        tp1 = 0 if not len1 else np.sum(npPreds[targs1] == npTarg[targs1])/len1
         tpAvg = (tp1+tp0)/2.
         # if (tp1>0 and tp0 > 0):
+        if tpAvg > 1.0:
+          assert tpAvg <= 1.0, f'tpAvg out of range {tpAvg}'
         msg = f'Accur0={tp0} Accur1={tp1} tpAvg={tpAvg}'
         accFile.write(f'{msg}\n')
         accFile.flush()
