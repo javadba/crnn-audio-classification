@@ -18,10 +18,10 @@ class AudioCRNN(BaseModel):
         in_chan = 2 if config['transforms']['args']['channels'] == 'stereo' else 1
 
         self.classes = classes
-        self.lstm_units = 64
-        self.lstm_layers = 2
+        self.lstm_units = 256
+        self.lstm_layers = 4
         self.spec = MelspectrogramStretch(hop_length=None, 
-                                num_mels=128, 
+                                num_mels=256,
                                 fft_length=2048, 
                                 norm='whiten', 
                                 stretch_param=[0.4, 0.4])
@@ -46,7 +46,10 @@ class AudioCRNN(BaseModel):
 
     def forward(self, batch):    
         # x-> (batch, time, channel)
-        x, lengths, _ = batch # unpacking seqs, lengths and srs
+        try:
+          x, lengths, _ = batch # unpacking seqs, lengths and srs
+        except Exception as e:
+          error(f'Batch of shape {batch.shape} is busted', e)
         # x-> (batch, channel, time)
         xt = x.float().transpose(1,2)
         # xt -> (batch, channel, freq, time)
@@ -79,7 +82,10 @@ class AudioCRNN(BaseModel):
         # (batch, classes)
         x = self.net['dense'](x)
 
-        x = F.log_softmax(x, dim=1)
+        if x.shape[1] == 2:
+          x = F.logsigmoid(x)
+        else:
+          x = F.log_softmax(x, dim=1)
 
         return x
 

@@ -1,5 +1,8 @@
+from collections import defaultdict
+
 import torch
 import numpy as np
+
 
 
 def accuracyOrig(output, target, percent=0.1):
@@ -12,6 +15,7 @@ def accuracyOrig(output, target, percent=0.1):
 
     return tp / len(target)
 
+mp = defaultdict(lambda: defaultdict(int))
 accFile = open('/tmp/acc.txt','w')
 def accuracyBal(output, target, percent=0.1):
     with torch.no_grad():
@@ -25,6 +29,8 @@ def accuracyBal(output, target, percent=0.1):
         #   print(f'Got some 0 npPreds: {numPredZeros}')
         targs1 = np.where(npTarg==1) ; len1 = len(targs1[0])
         targs0 = np.where(npTarg==0) ; len0 = len(targs0[0])
+        [mp[t].update({p:mp[t][p]+1}) for [t,p] in list(zip(npTarg, npPreds))]
+        # for [t,p] in list(zip(npTarg, npPreds))
         # print(f'Len1={len1}  len0={len0}')
         tp0 = 0 if not len0 else np.sum(npPreds[targs0] == npTarg[targs0])/len0
         tp1 = 0 if not len1 else np.sum(npPreds[targs1] == npTarg[targs1])/len1
@@ -32,7 +38,14 @@ def accuracyBal(output, target, percent=0.1):
         # if (tp1>0 and tp0 > 0):
         if tpAvg > 1.0:
           assert tpAvg <= 1.0, f'tpAvg out of range {tpAvg}'
-        msg = f'Accur0={tp0} Accur1={tp1} tpAvg={tpAvg}'
+        def confusion(mx):
+          return f"""
+Exp/Act\t\t0\t\t1
+      0\t\t{mx[0][0]}\t\t{mx[0][1]}
+      1\t\t{mx[1][0]}\t\t{mx[1][1]}"""
+        
+        msg = f"Accur0={tp0} Accur1={tp1} tpAvg={tpAvg} confusion={confusion(mp)}"
+        # msg = f"Accur0={tp0} Accur1={tp1} tpAvg={tpAvg} confusion={ [f'{k}:{repr(d)}' for [k,d] in mp.items()]}"
         accFile.write(f'{msg}\n')
         accFile.flush()
     return tpAvg

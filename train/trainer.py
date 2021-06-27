@@ -3,7 +3,7 @@ import torch
 from torchvision.utils import make_grid
 from .base_trainer import BaseTrainer
 from  utils import logger
-
+from  net.metric import mp
 from tqdm import tqdm
 
 # Structure based off https://github.com/victoresque/pytorch-template
@@ -36,6 +36,7 @@ class Trainer(BaseTrainer):
         return acc_metrics
 
     def _train_epoch(self, epoch):
+        global mp
         """
         Training logic for an epoch
 
@@ -60,6 +61,7 @@ class Trainer(BaseTrainer):
 
         _trange = tqdm(self.data_loader, leave=True, desc='')
 
+        mp.clear()
         for batch_idx, batch in enumerate(_trange):
             batch = [b.to(self.device) for b in batch]
             data, target = batch[:-1], batch[-1]
@@ -83,7 +85,7 @@ class Trainer(BaseTrainer):
             #self.writer.add_scalar('loss', loss.item())
             total_loss += loss.item()
             total_metrics += self._eval_metrics(output, target)
-
+            
 
             if self.verbosity >= 2 and batch_idx % self.log_step == 0:                
                 _str = 'Train Epoch: {} Loss: {:.6f}'.format(epoch,loss.item()) 

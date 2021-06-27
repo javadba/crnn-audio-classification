@@ -20,8 +20,8 @@ def deviceName():
 def nll_loss(output, target):
     # loss for log_softmax
     # return F.nll_loss(output, target, weight=torch.tensor(config['transforms']['weights']).to(deviceName()))
-    # weights=torch.tensor([0.32, 0.68]) if len(target) ==2 else torch.tensor( [1./output.shape[1]]*output.shape[1])
-    weights=(torch.tensor([0.5,0.5]) if len(target) ==2 else torch.tensor( [1./output.shape[1]]*output.shape[1])).to(deviceName())
+    weights=torch.tensor([0.9, 0.1]) if len(target) ==2 else torch.tensor( [1./output.shape[1]]*output.shape[1])
+    # weights=(torch.tensor([0.5,0.5]) if len(target) ==2 else torch.tensor( [1./output.shape[1]]*output.shape[1])).to(deviceName())
     return F.nll_loss(output, target, weight=weights).to(deviceName())
 
 def cross_entropy(output, target):
